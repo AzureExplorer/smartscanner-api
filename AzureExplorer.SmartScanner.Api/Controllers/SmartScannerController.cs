@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
 using System.Configuration;
+using System.Web.Http.Cors;
 
 namespace AzureExplorer.SmartScanner.Controllers
 {
     [RoutePrefix("api/smartScanner")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class SmartScannerController : ApiController
     {
         private IPersonRepository _personRepository;
