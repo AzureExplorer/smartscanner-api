@@ -78,11 +78,11 @@ namespace AzureExplorer.SmartScanner.Controllers
             try
             {
                 personDetails.MessageId = Guid.NewGuid().ToString();
-                await SendDeviceToCloudMessagesAsync(personDetails);
+                SendDeviceToCloudMessagesAsync(personDetails);
             }
             catch (Exception ex)
             {
-                return string.Empty;
+                return ex.Message;
             }
             return personDetails.MessageId;
         }
@@ -98,7 +98,7 @@ namespace AzureExplorer.SmartScanner.Controllers
             };
 
             // Send the telemetry message
-            await s_deviceClient.SendEventAsync(message);
+            s_deviceClient.SendEventAsync(message);
         }
         private async Task<string> GetPersonId(PersonDetails personDetails)
         {
