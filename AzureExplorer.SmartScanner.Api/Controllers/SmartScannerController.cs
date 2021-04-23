@@ -54,13 +54,20 @@ namespace AzureExplorer.SmartScanner.Controllers
                 responseData.MessageId = personDetails.MessageId;
                 var personId = await GetPersonId(personDetails);
                 var personData = await _personRepository.GetPersonByPersonId(personId);
-                var covidInfo = await GetCovidInfo(personData.AdhaarNo);
-                responseData.PersonDetails = personData;
-                responseData.CovidInfo = covidInfo;                
+                if (personData != null && !string.IsNullOrWhiteSpace(personData.AdhaarNo))
+                {
+                    var covidInfo = await GetCovidInfo(personData.AdhaarNo);
+                    responseData.PersonDetails = personData;
+                    responseData.CovidInfo = covidInfo;
+                }
+                else
+                {
+                    responseData.ExceptionMsg = "No Records found in DB against the Person Id: " + personId;
+                }
             }
             catch (Exception ex)
             {
-                responseData.ExceptionMsg = ex;
+                responseData.ExceptionMsg = ex.Message;
             }
             return responseData;
         }

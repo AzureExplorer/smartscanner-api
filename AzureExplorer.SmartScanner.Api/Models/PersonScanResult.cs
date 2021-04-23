@@ -7,6 +7,6 @@ namespace AzureExplorer.SmartScanner.Models
         public string MessageId { get; set; }
         public PersonDetails PersonDetails { get; set; }
         public CovidInfo CovidInfo { get; set; }
-        public Exception ExceptionMsg { get; set; }
+        public string ExceptionMsg { get; set; }
     }
 }
