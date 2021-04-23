@@ -7,6 +7,8 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Web.Http.Cors;
+using Microsoft.Azure.Devices.Client;
+using System.Text;
 
 namespace AzureExplorer.SmartScanner.Controllers
 {
@@ -15,10 +17,13 @@ namespace AzureExplorer.SmartScanner.Controllers
     public class SmartScannerController : ApiController
     {
         private IPersonRepository _personRepository;
+        private DeviceClient s_deviceClient;
+        private readonly TransportType s_transportType = TransportType.Mqtt;
         public SmartScannerController()
         {
             //_personRepository = personRepository;
             _personRepository = new PersonRepository(new MongoDBContext());
+            s_deviceClient = DeviceClient.CreateFromConnectionString(ConfigurationManager.AppSettings["IOTDeviceConnectionString"], s_transportType);
         }
         [HttpGet]
         [Route("getString")]
@@ -46,20 +51,47 @@ namespace AzureExplorer.SmartScanner.Controllers
             var responseData = new PersonScanResult();
             try
             {
+                responseData.MessageId = personDetails.MessageId;
                 var personId = await GetPersonId(personDetails);
                 var personData = await _personRepository.GetPersonByPersonId(personId);
                 var covidInfo = await GetCovidInfo(personData.AdhaarNo);
-                responseData=new PersonScanResult
-                {
-                    PersonDetails = personData,
-                    CovidInfo = covidInfo
-                };
+                responseData.PersonDetails = personData;
+                responseData.CovidInfo = covidInfo;                
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 responseData.ExceptionMsg = ex;
             }
             return responseData;
+        }
+        [HttpPost]
+        [Route("uploadImage")]
+        public async Task<string> UploadImage(PersonDetails personDetails)
+        {
+            try
+            {
+                personDetails.MessageId = Guid.NewGuid().ToString();
+                await SendDeviceToCloudMessagesAsync(personDetails);
+            }
+            catch (Exception ex)
+            {
+                return string.Empty;
+            }
+            return personDetails.MessageId;
+        }
+        private async Task SendDeviceToCloudMessagesAsync(PersonDetails personDetails)
+        {
+            // Create JSON message
+            //personDetails.Image = null;
+            string messageBody = JsonConvert.SerializeObject(personDetails);
+            var message = new Message(Encoding.ASCII.GetBytes(messageBody))
+            {
+                ContentType = "application/json",
+                ContentEncoding = "utf-8",
+            };
+
+            // Send the telemetry message
+            await s_deviceClient.SendEventAsync(message);
         }
         private async Task<string> GetPersonId(PersonDetails personDetails)
         {

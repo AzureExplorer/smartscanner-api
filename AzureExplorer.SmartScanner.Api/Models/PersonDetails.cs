@@ -9,6 +9,8 @@ namespace AzureExplorer.SmartScanner.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
+        [JsonProperty("messageId")]
+        public string MessageId { get; set; }
 
         [JsonProperty("image")]
         public byte[] Image { get; set; }
@@ -26,8 +28,8 @@ namespace AzureExplorer.SmartScanner.Models
         public string LName { get; set; }
         [JsonProperty("adhaarNo")]
         public string AdhaarNo { get; set; }
-        [JsonProperty("temperature")]
-        public Temperature Temperature { get; set; }
+        //[JsonProperty("temperature")]
+        //public Temperature Temperature { get; set; }
 
     }
     public class Temperature
