@@ -28,6 +28,10 @@ namespace AzureExplorer.SmartScanner.Models
         public string LName { get; set; }
         [JsonProperty("adhaarNo")]
         public string AdhaarNo { get; set; }
+        [JsonProperty("maxTemp")]
+        public decimal MaxTemp { get; set; }
+        [JsonProperty("currentTemp")]
+        public decimal CurrentTemp { get; set; }
         //[JsonProperty("temperature")]
         //public Temperature Temperature { get; set; }
 
