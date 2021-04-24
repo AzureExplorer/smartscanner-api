@@ -18,7 +18,7 @@ namespace AzureExplorer.SmartScanner.Controllers
     {
         private IPersonRepository _personRepository;
         private DeviceClient s_deviceClient;
-        private readonly TransportType s_transportType = TransportType.Mqtt;
+        private readonly TransportType s_transportType = TransportType.Http1;
         public SmartScannerController()
         {
             //_personRepository = personRepository;
